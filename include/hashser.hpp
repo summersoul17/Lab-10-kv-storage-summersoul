@@ -7,10 +7,7 @@
 #include <picosha2.h>
 #include <string>
 
-using string = std::string;
-
-string encode_data(const string &key, const string &value) {
-  return picosha2::hash256_hex_string(string(key + value));
+namespace hasher {
+  std::string encode_data(const std::string &key, const std::string &value);
 }
-
 #endif  // KV_STORAGE_HASHSER_HPP

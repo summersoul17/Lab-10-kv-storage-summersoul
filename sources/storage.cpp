@@ -4,26 +4,24 @@
 
 #include <storage.hpp>
 
-storage::storage() {
+storage::storage(const std::string& db_name) {
 
-  _db = nullptr;
+  rocksdb::DB* db;
 
   rocksdb::Options options;
 
   options.create_if_missing = true;
 
-  rocksdb::Status status = rocksdb::DB::Open(options, "data", &(_db));
+  rocksdb::Status status = rocksdb::DB::Open(options, db_name, &(db));
 
   if(!status.ok()) {
     throw std::runtime_error { "DB::Open Failed!"};
   }
+
+  _db.reset(db);
 }
 
-storage::~storage() {
-  if (_db) {
-    delete _db;
-  }
-}
+
 std::string storage::get(const std::string& key, bool* found) {
   std::string value;
   rocksdb::Status status = _db->Get(rocksdb::ReadOptions(), key, &value);
@@ -62,7 +60,7 @@ std::string storage::to_string() const {
   return ss.str();
 }
 
-std::queue<std::pair<std::string, std::string>> storage::operator()(){
+std::queue<std::pair<std::string, std::string>> storage::get_values(){
   rocksdb::Iterator* it = _db->NewIterator(rocksdb::ReadOptions());
   std::queue<std::pair<std::string, std::string>> queue;
   for (it->SeekToFirst(); it->Valid(); it->Next()) {

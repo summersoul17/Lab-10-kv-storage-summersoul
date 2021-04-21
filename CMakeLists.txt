@@ -22,7 +22,7 @@ HunterGate(
 )
 
 # TODO: rename project and delete this comment
-project(kv-storage VERSION 0.1.0)
+project(kv-storage)
 string(APPEND CMAKE_CXX_FLAGS " -pedantic -Werror -Wall -Wextra")
 string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-command-line-argument")
 string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
@@ -39,57 +39,39 @@ find_package(Boost CONFIG REQUIRED program_options log log_setup thread system f
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
-#=======================================================LOGGER======================================================
-add_library(logger INTERFACE)
-
-target_include_directories( logger INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/logger
-        )
-
-target_link_libraries(logger INTERFACE
+set(LIBS
         ${Boost_LOG_SETUP_LIBRARY}
         ${Boost_LOG_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}
         ${Boost_THREAD_LIBRARY}
         ${Boost_SYSTEM_LIBRARY}
-        )
-#===================================================================================================================
-
-#=======================================================CONSOLE=====================================================
-add_library(console STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/console.cpp)
-
-target_include_directories(console PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/console
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/PicoSHA2
-        )
-
-target_link_libraries(console
-        ${Boost_FILESYSTEM_LIBRARY}
-        ${Boost_THREAD_LIBRARY}
-        ${Boost_SYSTEM_LIBRARY}
         ${Boost_PROGRAM_OPTIONS_LIBRARY}
+        RocksDB::rocksdb)
+
+#=======================================================LIBRARY=====================================================
+add_library(${PROJECT_NAME}
+        sources/log_setup
+        sources/storage
+        sources/sync_queue
+        sources/application sources/hasher.cpp)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third-party/PicoSHA2>
+        $<INSTALL_INTERFACE:third-party/PicoSHA2>
+        $<INSTALL_INTERFACE:include>
         )
-#===================================================================================================================
 
-#=======================================================STORAGE=====================================================
-add_library(storage STATIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/storage.cpp)
-
-target_include_directories(storage PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/storage
+target_link_libraries(${PROJECT_NAME}
+        ${LIBS}
         )
-
-target_link_libraries(storage RocksDB::rocksdb)
-#===================================================================================================================
-
-target_link_libraries(console logger storage)
+#===================================================================================================================+
 
 add_executable(dbcs
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
 )
 
-target_link_libraries(dbcs console)
+target_link_libraries(dbcs ${PROJECT_NAME} ${LIBS})
 
 if(BUILD_DOCS)
   set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/_docs)
