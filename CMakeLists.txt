@@ -53,7 +53,11 @@ add_library(${PROJECT_NAME}
         sources/log_setup
         sources/storage
         sources/sync_queue
-        sources/application sources/hasher.cpp)
+        sources/application
+        sources/hasher.cpp
+#        sources/database.cpp
+#        sources/application_2.cpp
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

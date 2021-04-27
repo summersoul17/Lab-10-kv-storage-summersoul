@@ -17,6 +17,7 @@ boost::log::trivial::severity_level recognize_log_level(const std::string& level
 }
 
 void log_setup::init(const std::string& log_level){
+
   boost::log::add_common_attributes();
 
   boost::log::core::get()->set_filter(
@@ -24,7 +25,7 @@ void log_setup::init(const std::string& log_level){
       );
 
   boost::log::add_console_log(
-      std::clog, boost::log::keywords::format =
+      std::cout, boost::log::keywords::format =
           "[%TimeStamp%][%Severity%][%ThreadID%]: %Message%");
   boost::log::add_file_log(
       boost::log::keywords::file_name = "log_%N.log",
@@ -33,4 +34,6 @@ void log_setup::init(const std::string& log_level){
           boost::log::sinks::file::rotation_at_time_point(0, 0, 0),
       boost::log::keywords::format =
           "[%TimeStamp%][%Severity%][%ThreadID%]: %Message%");
+
+  std::srand(time(nullptr));
 }

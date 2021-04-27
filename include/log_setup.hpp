@@ -15,6 +15,12 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/utility/setup/console.hpp>
 
+const size_t max_random_family_length = 1000;
+const size_t random_string_length = 15;
+const size_t max_families = 100;
+const size_t key_width = 3;
+
+
 namespace log_setup {
 void init(const std::string&);
 }

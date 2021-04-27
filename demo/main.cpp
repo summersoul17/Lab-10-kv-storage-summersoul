@@ -7,10 +7,12 @@ int main(int argc, char** argv) {
     return 1;
   } else {
     if (app.mode() == db_gen){
-      app.generate_random_values(1500);
+      BOOST_LOG_TRIVIAL(trace) << "Starting database generation";
+      app.generate_db();
       return 0;
     } else if (app.mode() == hash_gen){
-      app.hash_database();
+      BOOST_LOG_TRIVIAL(trace) << "Starting database hashing";
+      app.hash_db();
       return 0;
     } else {
       BOOST_LOG_TRIVIAL(fatal) << "Unknown mode: " << app.mode();
