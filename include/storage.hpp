@@ -18,7 +18,7 @@ class storage {
 
  public:
   void generate();
-  [[nodiscard]] std::string name() const { return _name; }
+  [[nodiscard]] std::string name() const { return _name; }//
 
 
   void get_column_families(column_families_queue&);
